@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Ваш токен
 TOKEN = os.getenv('TELEGRAM_TOKEN', '7312638510:AAFDeQhPyh5g8lVg1QSQq7eFConOXLFKuAI')
-LARAVEL_URL = os.getenv('LARAVEL_URL', 'http://127.0.0.1:8000')
+LARAVEL_URL = os.getenv('LARAVEL_URL', 'http://91.142.75.171/')
 
 # Команда старт
 def start(update: Update, context: CallbackContext) -> None:
@@ -58,10 +58,10 @@ def button(update: Update, context: CallbackContext) -> None:
                 ]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
-            query.message.reply_text(text=f'Обновите статус транзакции:{transaction_id}', reply_markup=reply_markup)
+            query.message.reply_text(text=f'Обновите статус транзакции: {transaction_id}', reply_markup=reply_markup)
         else:
             query.message.reply_text(text="Ошибка при обработке запроса.")
-            logger.error(f"Ошибка при подтверждении транзакции {transaction_id}.")
+            logger.error(f"Ошибка при подтверждении транзакции {transaction_id}. Response: {response.text}")
     else:
         response = requests.post(f'{LARAVEL_URL}/telegram/status', json={'transaction_id': transaction_id, 'status': action})
         if response.status_code == 200:
@@ -70,7 +70,7 @@ def button(update: Update, context: CallbackContext) -> None:
             logger.info(f"Транзакция {transaction_id} обновлена статусом: {action}.")
         else:
             query.message.reply_text(text="Ошибка при обновлении статуса.")
-            logger.error(f"Ошибка при обновлении статуса транзакции {transaction_id}.")
+            logger.error(f"Ошибка при обновлении статуса транзакции {transaction_id}. Response: {response.text}")
 
 def main() -> None:
     updater = Updater(TOKEN)
